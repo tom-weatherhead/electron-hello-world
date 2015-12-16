@@ -21,7 +21,9 @@
   "devDependencies": {
     "electron-prebuilt": "^0.36.0"
   },
+  "author": "Kristian Poslek <kristian.poslek@gmail.com>",
   "contributors": [
 	"Tom Weatherhead <tom_weatherhead@hotmail.com>"
-  ]
+  ],
+  "license": "MIT"
 }
