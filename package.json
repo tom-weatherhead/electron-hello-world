@@ -1,11 +1,27 @@
 {
   "name": "electron-hello-world",
   "version": "1.0.0",
+  "description": "A 'Hello, World!' project for Electron",
+  "keywords": [
+	"electron",
+	"hello",
+	"world"
+  ],
+  "repository": {
+	"type" : "git",
+	"url" : "https://github.com/tom-weatherhead/electron-hello-world.git"
+  },
+  "bugs": {
+	"url" : "https://github.com/tom-weatherhead/electron-hello-world/issues"
+  },
   "main": "./main.js",
   "scripts": {
     "start": "electron ."
   },
   "devDependencies": {
     "electron-prebuilt": "^0.36.0"
-  }
+  },
+  "contributors": [
+	"Tom Weatherhead <tom_weatherhead@hotmail.com>"
+  ]
 }
