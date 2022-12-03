@@ -9,18 +9,18 @@
   ],
   "homepage": "https://github.com/tom-weatherhead/electron-hello-world",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/tom-weatherhead/electron-hello-world.git"
+    "type": "git",
+    "url": "https://github.com/tom-weatherhead/electron-hello-world.git"
   },
   "bugs": {
-    "url" : "https://github.com/tom-weatherhead/electron-hello-world/issues"
+    "url": "https://github.com/tom-weatherhead/electron-hello-world/issues"
   },
   "main": "./main.js",
   "scripts": {
     "start": "electron ."
   },
   "devDependencies": {
-    "electron-prebuilt": "^0.36.0"
+    "electron-prebuilt": "^1.4.13"
   },
   "author": "Tom Weatherhead <tom_weatherhead@hotmail.com> (https://github.com/tom-weatherhead)",
   "license": "MIT"

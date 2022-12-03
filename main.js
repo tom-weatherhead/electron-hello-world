@@ -1,9 +1,10 @@
 'use strict';
 
-var app = require('app');
-var BrowserWindow = require('browser-window');
+// var app = require('app');
+// var BrowserWindow = require('browser-window');
+const { app, BrowserWindow /* , screen */ } = require('electron');
 
-var mainWindow = null;
+let mainWindow = undefined;
 
 app.on('ready', function() {
     mainWindow = new BrowserWindow({
