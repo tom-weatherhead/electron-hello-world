@@ -8,23 +8,12 @@ function isMainDisplay(display) {
     return display.bounds.x === 0 && display.bounds.y === 0;
 }
 
+// From https://www.electronjs.org/docs/latest/api/screen :
+// app.whenReady().then(() => { ... }); -> Error: app.whenReady() not a function
+
 app.on('ready', () => {
     console.log('App event: ready');
 
-    // mainWindow = new BrowserWindow({
-    //     // x: 100,     // Show the window on the Panasonic display
-    //     // x: -1180,    // Show the window on the KDS display
-    //     x: -3100,    // Show the window on the Philips display
-    //     y: 100,
-    //     width: 1024,
-    //     height: 768
-    // });
-
-    // mainWindow.loadURL('file://' + __dirname + '/app/index.html');
-// });
-
-// From https://www.electronjs.org/docs/latest/api/screen :
-// app.whenReady().then(() => {
     const { screen } = require('electron');
 
     const displays = screen.getAllDisplays();
@@ -60,20 +49,41 @@ app.on('ready', () => {
         console.log('internal:', display.internal);
     }
 
+    const xMargin = 100;
+    const yMargin = 100;
+
     const windows = displays.map(display => {
         console.log('Creating a window on display', display.id);
+
+        const x = display.workArea.x + xMargin;
+        const y = display.workArea.y + yMargin;
+        const width = display.workArea.width - 2 * xMargin;
+        const height = display.workArea.height - 2 * yMargin;
 
         const window = new BrowserWindow({
             // x: 100,     // Show the window on the Panasonic display
             // x: -1180,    // Show the window on the KDS display
             // x: -3100,    // Show the window on the Philips display
-            x: display.bounds.x + 100,
-            y: 100,
-            width: 1024,
-            height: 768
+
+            // x: display.bounds.x + 100,
+            // y: 100,
+            // width: 1024,
+            // height: 768
+
+            title: `Electron BrowserWindow on Display ${display.id}`,
+            x,
+            y,
+            width,
+            height
         });
-    
+
         window.loadURL('file://' + __dirname + '/app/index.html');
+        // Or e.g. window.loadURL('https://github.com');
+
+        // const win = new BrowserWindow({ show: false })
+        // win.once('ready-to-show', () => {
+        //     win.show()
+        // });
 
         if (isMainDisplay(display)) {
             mainWindow = window;
@@ -81,18 +91,26 @@ app.on('ready', () => {
 
         return window;
     });
+});
 
-    /* const externalDisplay = displays.find((display) => {
-      return display.bounds.x !== 0 || display.bounds.y !== 0
-    })
-  
-    if (externalDisplay) {
-      win = new BrowserWindow({
-        x: externalDisplay.bounds.x + 50,
-        y: externalDisplay.bounds.y + 50
-      })
-      win.loadURL('https://github.com')
-    } */
+// Alternative to window.on('focus', ...); :
+app.on('browser-window-focus', (event, window) => {
+    // E.g. The user clicked on the window, giving the window focus
+    console.log('App event: browser-window-focus');
+
+    if (window) {
+        console.log('Focus window:', window.id);
+    }
+});
+
+// Alternative to window.on('blur', ...); :
+app.on('browser-window-blur', (event, window) => {
+    // I.e. The window had focus, but then the focus went elsewhere.
+    console.log('App event: browser-window-blur');
+
+    if (window) {
+        console.log('Blur window:', window.id);
+    }
 });
 
 app.on('window-all-closed', () => {
