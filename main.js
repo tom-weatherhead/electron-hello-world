@@ -1,6 +1,7 @@
 'use strict';
 
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain, screen } = require('electron');
+const path = require('path');
 
 let mainWindow = undefined;
 
@@ -8,13 +9,8 @@ function isMainDisplay(display) {
     return display.bounds.x === 0 && display.bounds.y === 0;
 }
 
-// From https://www.electronjs.org/docs/latest/api/screen :
-// app.whenReady().then(() => { ... }); -> Error: app.whenReady() not a function
-
-app.on('ready', () => {
-    console.log('App event: ready');
-
-    const { screen } = require('electron');
+function createWindow() {
+    // const { screen } = require('electron');
 
     const displays = screen.getAllDisplays();
 
@@ -74,10 +70,14 @@ app.on('ready', () => {
             x,
             y,
             width,
-            height
+            height,
+			webPreferences: {
+				preload: path.join(__dirname, 'preload.js')
+			}
         });
 
-        window.loadURL('file://' + __dirname + '/app/index.html');
+        // window.loadURL('file://' + __dirname + '/app/index.html');
+        window.loadFile('./app/index.html');
         // Or e.g. window.loadURL('https://github.com');
 
         // const win = new BrowserWindow({ show: false })
@@ -91,6 +91,26 @@ app.on('ready', () => {
 
         return window;
     });
+}
+
+app.whenReady().then(() => {
+    console.log('App event: ready');
+
+	createWindow()
+
+	app.on('activate', () => {
+
+		if (BrowserWindow.getAllWindows().length === 0) {
+			createWindow();
+		}
+	});
+
+	ipcMain.on('set-title', (event, title) => {
+		const webContents = event.sender;
+		const win = BrowserWindow.fromWebContents(webContents);
+
+		win.setTitle(title);
+	});
 });
 
 // Alternative to window.on('focus', ...); :
@@ -115,5 +135,8 @@ app.on('browser-window-blur', (event, window) => {
 
 app.on('window-all-closed', () => {
     console.log('App event: window-all-closed');
-    app.quit();
+
+    // if (process.platform !== 'darwin') {
+	app.quit();
+	// }
 });
