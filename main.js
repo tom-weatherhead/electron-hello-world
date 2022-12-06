@@ -22,24 +22,12 @@ const appIconFilePath = path.join(__dirname, 'src', 'assets', 'icons', 'macos-do
 let mainWindow = undefined;
 
 // See https://electronjs.org/docs/api/app#appdisablehardwareacceleration
+// 'This method can only be called before app is ready.'
 // app.disableHardwareAcceleration();
 
 // TODO: Use app.isUnityRunning() on Linux?
 
-if (isPlatformMac) {
-	app.setAboutPanelOptions({
-		applicationName: 'Foo',
-		applicationVersion: '0.0.0',
-		copyright: 'Copyright (c) 2018-2022 Buckwheat Unlimited',
-		version: '0.0.0', // macOS only.
-		credits: 'Praise the LORD!' // macOS and Windows only.
-		// , authors: ['Buckwheat'], // Linux only.
-		// website: 'https://2hrd4u.org' // , // Linux only.
-		// iconPath: pngIconFilePath // Linux and Windows only.
-	});
-}
-
-function setDockMenu() {
+function setDockMenuForMacOS() {
 
 	if (!isPlatformMac) {
 		return;
@@ -89,32 +77,32 @@ function createWindow() {
     // Philips TV: id == 5, bounds.x == -3200
     // KDS Radius display: id == 8, bounds.x == -1280
 
-    for (let display of displays) {
-        console.log('\nDisplay:');
-        console.log('id:', display.id);
-        console.log('Bounds.x:', display.bounds.x);
-        console.log('Bounds.y:', display.bounds.y);
-        console.log('Bounds.width:', display.bounds.width);
-        console.log('Bounds.height:', display.bounds.height);
-        console.log('Size.width:', display.size.width);
-        console.log('Size.height:', display.size.height);
-        console.log('rotation:', display.rotation);
-        console.log('scaleFactor:', display.scaleFactor);
-        console.log('touchSupport:', display.touchSupport);
-        console.log('monochrome:', display.monochrome);
-        console.log('accelerometerSupport:', display.accelerometerSupport);
-        console.log('colorSpace:', display.colorSpace);
-        console.log('colorDepth:', display.colorDepth);
-        console.log('depthPerComponent:', display.depthPerComponent);
-        console.log('displayFrequency:', display.displayFrequency);
-        console.log('workArea.x:', display.workArea.x);
-        console.log('workArea.y:', display.workArea.y);
-        console.log('workArea.width:', display.workArea.width);
-        console.log('workArea.height:', display.workArea.height);
-        console.log('workAreaSize.width:', display.workAreaSize.width);
-        console.log('workAreaSize.height:', display.workAreaSize.height);
-        console.log('internal:', display.internal);
-    }
+    // for (let display of displays) {
+    //     console.log('\nDisplay:');
+    //     console.log('id:', display.id);
+    //     console.log('Bounds.x:', display.bounds.x);
+    //     console.log('Bounds.y:', display.bounds.y);
+    //     console.log('Bounds.width:', display.bounds.width);
+    //     console.log('Bounds.height:', display.bounds.height);
+    //     console.log('Size.width:', display.size.width);
+    //     console.log('Size.height:', display.size.height);
+    //     console.log('rotation:', display.rotation);
+    //     console.log('scaleFactor:', display.scaleFactor);
+    //     console.log('touchSupport:', display.touchSupport);
+    //     console.log('monochrome:', display.monochrome);
+    //     console.log('accelerometerSupport:', display.accelerometerSupport);
+    //     console.log('colorSpace:', display.colorSpace);
+    //     console.log('colorDepth:', display.colorDepth);
+    //     console.log('depthPerComponent:', display.depthPerComponent);
+    //     console.log('displayFrequency:', display.displayFrequency);
+    //     console.log('workArea.x:', display.workArea.x);
+    //     console.log('workArea.y:', display.workArea.y);
+    //     console.log('workArea.width:', display.workArea.width);
+    //     console.log('workArea.height:', display.workArea.height);
+    //     console.log('workAreaSize.width:', display.workAreaSize.width);
+    //     console.log('workAreaSize.height:', display.workAreaSize.height);
+    //     console.log('internal:', display.internal);
+    // }
 
     const xMargin = 100;
     const yMargin = 100;
@@ -146,6 +134,7 @@ function createWindow() {
             y,
             width,
             height,
+			show: false,
 			webPreferences: {
 				preload: path.join(__dirname, 'preload.js')
 			}
@@ -155,10 +144,10 @@ function createWindow() {
         window.loadFile('./app/index.html');
         // Or e.g. window.loadURL('https://github.com');
 
-        // const win = new BrowserWindow({ show: false })
-        // win.once('ready-to-show', () => {
-        //     win.show()
-        // });
+        // const window = new BrowserWindow({ show: false }); and then:
+        window.once('ready-to-show', () => {
+            window.show();
+        });
 
         if (isMainDisplay(display)) {
             mainWindow = window;
@@ -167,6 +156,11 @@ function createWindow() {
         return window;
     });
 }
+
+// Do we want to put some of the app startup code
+// in a 'will-finish-launching' event handler?
+// -> From https://www.electronjs.org/docs/latest/api/app#event-will-finish-launching :
+// 'In most cases, you should do everything in the ready event handler.'
 
 app.whenReady().then(() => {
     console.log('App event: ready');
@@ -202,8 +196,20 @@ app.whenReady().then(() => {
 		win.setTitle(title);
 	});
 
+	// Set up the About Panel.
+	app.setAboutPanelOptions({
+		applicationName: 'electron-hello-world',
+		applicationVersion: '0.0.0',
+		copyright: 'Copyright (c) 2018-2022 Buckwheat Unlimited',
+		version: '0.0.0', // macOS only.
+		credits: 'Praise the LORD!' // macOS and Windows only.
+		// , authors: ['Buckwheat'], // Linux only.
+		// website: 'https://2hrd4u.org' // , // Linux only.
+		// iconPath: pngIconFilePath // Linux and Windows only.
+	});
+
 	// On macOS, set up the dock menu
-	setDockMenu();
+	setDockMenuForMacOS();
 });
 
 // Alternative to window.on('focus', ...); :
