@@ -11,10 +11,12 @@ const isPlatformMac = platform === 'darwin';
 
 // console.log('platform is', platform);
 
-const faviconFilePath = path.join(__dirname, 'src', 'assets', 'icons', 'png', 'favicon.png');
-const trayIconFilePath = faviconFilePath;
+// const faviconFilePath = path.join(__dirname, 'src', 'assets', 'icons', 'png', 'favicon.png');
+// const trayIconFilePath = faviconFilePath;
 
-// const trayIconFilePath = path.join(__dirname, 'src', 'assets', 'icons', 'macos-tray', 'nipple-icon01-024x024.png');
+const trayIconFilePath = path.join(__dirname, 'src', 'assets', 'icons', 'macos-tray', 'favicon3.16x16.png');
+// const trayIconFilePath = path.join(__dirname, 'src', 'assets', 'icons', 'macos-tray', 'favicon4.16x16.png');
+// const trayIconFilePath = path.join(__dirname, 'src', 'assets', 'icons', 'macos-tray', 'favicon5.16x16.png');
 
 const appIconFilePath = path.join(__dirname, 'src', 'assets', 'icons', 'macos-dock', 'green-f-01-96x96.png');;
 // const pngIconFilePath = appIconFilePath;
@@ -144,14 +146,26 @@ function createWindow() {
         window.loadFile('./app/index.html');
         // Or e.g. window.loadURL('https://github.com');
 
+        if (isMainDisplay(display)) {
+            mainWindow = window;
+        }
+
+        // Create event handlers for the window
+
         // const window = new BrowserWindow({ show: false }); and then:
         window.once('ready-to-show', () => {
             window.show();
         });
 
-        if (isMainDisplay(display)) {
-            mainWindow = window;
-        }
+        window.on('focus', () => {
+            // E.g. The user clicked on the window, giving the window focus
+            console.log('Window event: focus. Window ID:', window.id);
+        });
+
+        window.on('blur', () => {
+			// I.e. The window had focus, but then the focus went elsewhere.
+			console.log('Window event: blur. Window ID:', window.id);
+        });
 
         return window;
     });
@@ -165,8 +179,10 @@ function createWindow() {
 app.whenReady().then(() => {
     console.log('App event: ready');
 
+    console.log('runningUnderARM64Translation:', app.runningUnderARM64Translation);
+
 	// Create the first window
-	createWindow()
+	createWindow();
 
 	// Ensure that there is always at least one window.
 	app.on('activate', () => {
@@ -213,24 +229,24 @@ app.whenReady().then(() => {
 });
 
 // Alternative to window.on('focus', ...); :
-app.on('browser-window-focus', (event, window) => {
-    // E.g. The user clicked on the window, giving the window focus
-    console.log('App event: browser-window-focus');
+// app.on('browser-window-focus', (event, window) => {
+//     // E.g. The user clicked on the window, giving the window focus
+//     console.log('App event: browser-window-focus');
 
-    if (window) {
-        console.log('Focus window:', window.id);
-    }
-});
+//     if (window) {
+//         console.log('Focus window:', window.id);
+//     }
+// });
 
 // Alternative to window.on('blur', ...); :
-app.on('browser-window-blur', (event, window) => {
-    // I.e. The window had focus, but then the focus went elsewhere.
-    console.log('App event: browser-window-blur');
+// app.on('browser-window-blur', (event, window) => {
+//     // I.e. The window had focus, but then the focus went elsewhere.
+//     console.log('App event: browser-window-blur');
 
-    if (window) {
-        console.log('Blur window:', window.id);
-    }
-});
+//     if (window) {
+//         console.log('Blur window:', window.id);
+//     }
+// });
 
 app.on('window-all-closed', () => {
     console.log('App event: window-all-closed');
